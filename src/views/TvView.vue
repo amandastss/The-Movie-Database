@@ -3,52 +3,52 @@ import { ref, onMounted } from 'vue';
 import api from '@/plugins/axios';
 import Loading from 'vue-loading-overlay';
 import { useGenreStore } from '@/stores/genre';
+import { useRouter } from "vue-router";
 
-
+const router = useRouter();
 const genreStore = useGenreStore();
-
 const isLoading = ref(false);
+const genres = ref([]);
 const tvShows = ref([]);
-
-
+const getGenreName = (id) => genres.value.find((genre) => genre.id === id).name;
 const formatDate = (date) => new Date(date).toLocaleDateString('pt-BR');
 
 
 const listTv = async (genreId) => {
+  genreStore.setCurrentGenreId(genreId);
   isLoading.value = true;
-  try {
-    const response = await api.get('discover/tv', {
-      params: {
-        with_genres: genreId,
-        language: 'pt-BR',
-      },
-    });
-    tvShows.value = response.data.results;
-  } catch (error) {
-    console.error('Erro ao carregar programas de TV:', error);
-  } finally {
-    isLoading.value = false;
-  }
+  const response = await api.get("discover/tv", {
+    params: {
+      with_genres: genreId,
+      language: "pt-BR",
+    },
+  });
+  tvShows.value = response.data.results;
+  isLoading.value = false;
 };
 
+function openTv(tvShowsId) {
+  router.push({ name: "TvShowDetails", params: { tvShowsId } });
+}
 
 onMounted(async () => {
   isLoading.value = true;
   await genreStore.getAllGenres('tv'); 
   isLoading.value = false;
 });
+
+
 </script>
 
 <template>
   <h1>Programas de TV</h1>
-
-  <!-- Lista de gêneros -->
   <ul class="genre-list">
     <li
       v-for="genre in genreStore.genres"
       :key="genre.id"
       @click="listTv(genre.id)"
       class="genre-item"
+      :class="{ active: genre.id === genreStore.currentGenreId }"
     >
       {{ genre.name }}
     </li>
@@ -56,12 +56,12 @@ onMounted(async () => {
 
   <loading v-model:active="isLoading" is-full-page />
 
-  <!-- Lista de programas -->
   <div class="tv-list">
     <div v-for="tv in tvShows" :key="tv.id" class="tv-card">
       <img
         :src="`https://image.tmdb.org/t/p/w500${tv.poster_path}`"
         :alt="tv.name"
+         @click="openTv(tv.id)"
       />
       <div class="tv-details">
         <p class="tv-title">{{ tv.name }}</p>
@@ -73,6 +73,7 @@ onMounted(async () => {
             v-for="genre_id in tv.genre_ids"
             :key="genre_id"
             @click="listTv(genre_id)"
+            :class="{ active: genre_id === genreStore.currentGenreId }"
           >
             {{ genreStore.getGenreName(genre_id) }}
           </span>
@@ -154,6 +155,16 @@ onMounted(async () => {
   color: #fff;
   font-size: 0.8rem;
   font-weight: bold;
+}
+.active {
+  background-color: #67b086;
+  font-weight: bolder;
+}
+
+.tv-genres span.active {
+  background-color: #abc322;
+  color: #000;
+  font-weight: bolder;
 }
 
 .tv-genres span:hover {

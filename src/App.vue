@@ -1,6 +1,7 @@
 <script setup>
   import { ref, onMounted } from 'vue';
   import api from './plugins/axios';
+import { LoadingPlugin } from 'vue-loading-overlay';
 
   const moviesGenres = ref([]);
   const TVGenres = ref([]);
@@ -21,6 +22,7 @@
     </nav>
   </header>
   <main>
+   
     <router-view />
   </main>
 </template>
