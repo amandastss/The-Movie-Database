@@ -28,7 +28,7 @@ const listTv = async (genreId) => {
 };
 
 function openTv(tvShowsId) {
-  router.push({ name: "TvShowDetails", params: { tvShowsId } });
+  router.push({ name: "TvShowDetails", params: { TvId: tvShowsId } });
 }
 
 onMounted(async () => {
@@ -58,11 +58,11 @@ onMounted(async () => {
 
   <div class="tv-list">
     <div v-for="tv in tvShows" :key="tv.id" class="tv-card">
-      <img
-        :src="`https://image.tmdb.org/t/p/w500${tv.poster_path}`"
-        :alt="tv.name"
-         @click="openTv(tv.id)"
-      />
+          <img
+      :src="`https://image.tmdb.org/t/p/w500${tv.poster_path}`"
+      :alt="tv.title"
+      @click="openTv(tv.id)"
+    />
       <div class="tv-details">
         <p class="tv-title">{{ tv.name }}</p>
         <p class="tv-release-date">

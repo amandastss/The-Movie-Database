@@ -20,6 +20,15 @@ export const useGenreStore = defineStore('genre', () => {
     const response = await api.get(`genre/${type}/list?language=pt-BR`);
     state.genres = response.data.genres;
   };
+    const getMovieDetail = async (movieId) => {
+    const response = await api.get(`movie/${movieId}`);
+    state.currentMovie = response.data;
+  };
+  
+   const getTvDetail = async (TvId) => {
+    const response = await api.get(`tv/${TvId}`);
+    state.currentTv = response.data;
+  };
 
   return {
   genres,
@@ -27,5 +36,6 @@ export const useGenreStore = defineStore('genre', () => {
   getGenreName,
   currentGenreId,
   setCurrentGenreId,
+  getTvDetail,
 };
 });
